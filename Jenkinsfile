@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout true
-    }
-
     stages {
         stage('Check branch') {
             when {
@@ -18,17 +14,29 @@ pipeline {
 
     post {
         success {
-            // ส่ง notification เมื่อ build สำเร็จ
             discordSend(
-                description: "Build SUCCESS on branch ${env.BRANCH_NAME}",
-                webhookURL: "https://discord.com/api/webhooks/1447481613964415126/GqWrwspWTne391BmUZXNg0wdtgXGPDoPOdrgpiBt9erHpZhbNmEyOrjNg16kZ6q62ImC"
+                description: """
+                ✅ Build SUCCESS
+                Branch: ${env.BRANCH_NAME}
+                Build Number: #${env.BUILD_NUMBER}
+                Triggered by: ${currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')[0]?.userName ?: 'unknown'}
+                Time: ${new Date().format("yyyy-MM-dd HH:mm:ss")}
+                """,
+                title: "Jenkins Build",
+                color: "GREEN"
             )
         }
         failure {
-            // ส่ง notification เมื่อ build fail
             discordSend(
-                description: "Build FAILED on branch ${env.BRANCH_NAME}",
-                webhookURL: "https://discord.com/api/webhooks/1447481613964415126/GqWrwspWTne391BmUZXNg0wdtgXGPDoPOdrgpiBt9erHpZhbNmEyOrjNg16kZ6q62ImC"
+                description: """
+                ❌ Build FAILED
+                Branch: ${env.BRANCH_NAME}
+                Build Number: #${env.BUILD_NUMBER}
+                Triggered by: ${currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')[0]?.userName ?: 'unknown'}
+                Time: ${new Date().format("yyyy-MM-dd HH:mm:ss")}
+                """,
+                title: "Jenkins Build",
+                color: "RED"
             )
         }
     }
