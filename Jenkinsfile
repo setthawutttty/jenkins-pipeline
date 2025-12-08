@@ -2,43 +2,32 @@ pipeline {
     agent any
 
     stages {
-        stage('Check branch') {
-            when {
-                branch 'main'
-            }
+        stage('Build and Test') {
             steps {
-                echo "This is main branch, building..."
+                echo "Building and testing on branch: ${env.BRANCH_NAME}"
+                // ใส่คำสั่ง Build และ Test ของคุณที่นี่
+                sh 'echo "Simulating: npm install && npm test"'
+            }
+        }
+
+        // Stage นี้จะทำงานเสมอ เพราะเรามั่นใจว่ามันคือ branch main แล้ว
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying to Production Server...'
+                sh 'echo "Simulating: Deploying to production environment"'
             }
         }
     }
 
     post {
+        always {
+            echo "Pipeline for branch ${env.BRANCH_NAME} finished."
+        }
         success {
-            discordSend(
-                description: """
-                ✅ Build SUCCESS
-                Branch: ${env.BRANCH_NAME}
-                Build Number: #${env.BUILD_NUMBER}
-                Triggered by: ${currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')[0]?.userName ?: 'unknown'}
-                Time: ${new Date().format("yyyy-MM-dd HH:mm:ss")}
-                """,
-                title: "Jenkins Build",
-                color: "GREEN"
-            )
+            echo "SUCCESS: Deployed to production successfully."
         }
         failure {
-            discordSend(
-                description: """
-                ❌ Build FAILED
-                Branch: ${env.BRANCH_NAME}
-                Build Number: #${env.BUILD_NUMBER}
-                Triggered by: ${currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')[0]?.userName ?: 'unknown'}
-                Time: ${new Date().format("yyyy-MM-dd HH:mm:ss")}
-                """,
-                title: "Jenkins Build",
-                color: "RED"
-            )
+            echo "FAILURE: Pipeline failed. Check logs for errors."
         }
     }
 }
-
