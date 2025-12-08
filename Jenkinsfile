@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('Build and Test') {
             steps {
+		echo "AUTO-BUILD TEST: This is a new change to test the trigger!"
                 echo "Building and testing on branch: ${env.BRANCH_NAME}"
                 // ใส่คำสั่ง Build และ Test ของคุณที่นี่
                 sh 'echo "Simulating: npm install && npm test"'
