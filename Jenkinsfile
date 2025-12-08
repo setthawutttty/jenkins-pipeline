@@ -1,10 +1,19 @@
 pipeline {
-    agent { docker { image 'python:3.14.1-alpine3.23' } }
+    agent any
+
+    options {
+        skipDefaultCheckout true
+    }
+
     stages {
-        stage('build') {
+        stage('Check branch') {
+            when {
+                branch 'main'
+            }
             steps {
-                sh 'python --version'
+                echo "This is main branch, building..."
             }
         }
     }
 }
+
